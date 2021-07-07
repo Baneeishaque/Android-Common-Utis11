@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.util.Log;
 
+import org.javatuples.Pair;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -53,11 +55,37 @@ public class DatePickerUtils {
 
     }
 
-    public static String getTitleFromMysqlDateStrings(String operation, String start_date, String end_date, String APPLICATION_NAME) {
-        if (start_date.equals(end_date)) {
-            return operation + " : " + DateUtils1.mysqlDateStringToNormalDateString(start_date, APPLICATION_NAME);
+    public static Pair<Boolean, String> getTitleFromMysqlDateStrings(String operation, String startDate, String endDate) {
+
+        if (startDate.equals(endDate)) {
+
+            org.javatuples.Pair<Boolean, String> dateStringConversionResult = DateUtils1.mySqlDateStringToNormalDateString(startDate);
+            if (dateStringConversionResult.getValue0()) {
+
+                return Pair.with(true, operation + " : " + dateStringConversionResult.getValue1());
+
+            } else {
+
+                return dateStringConversionResult;
+            }
         } else {
-            return operation + " : " + DateUtils1.mysqlDateStringToNormalDateString(start_date, APPLICATION_NAME) + " - " + DateUtils1.mysqlDateStringToNormalDateString(end_date, APPLICATION_NAME);
+
+            Pair<Boolean, String> dateConversionResult = DateUtils1.mySqlDateStringToNormalDateString(startDate);
+            if (dateConversionResult.getValue0()) {
+
+                Pair<Boolean, String> dateConversionResult2 = DateUtils1.mySqlDateStringToNormalDateString(endDate);
+                if (dateConversionResult2.getValue0()) {
+
+                    return Pair.with(true, operation + " : " + dateConversionResult.getValue1() + " - " + dateConversionResult2.getValue1());
+
+                } else {
+
+                    return dateConversionResult2;
+                }
+            } else {
+
+                return dateConversionResult;
+            }
         }
     }
 
